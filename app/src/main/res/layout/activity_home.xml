@@ -2,7 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     >
 
     <data>
@@ -18,28 +17,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:openDrawer="start"
         >
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
-
-            <android.support.design.widget.AppBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/Cardme.Toolbar"
-                    app:navigationIcon="@drawable/ic_hamburger"
-                    />
-
-            </android.support.design.widget.AppBarLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -69,11 +52,41 @@
                     style="@style/Cardme.BottomBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:menu="@menu/menu_home"
+                    app:menu="@menu/bottom_bar_menu"
                     bind:bottomNavigationListener="@{vm.bottomNavigationClick}"
                     />
 
             </LinearLayout>
+
+            <android.support.design.widget.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/Cardme.Toolbar"
+                    app:navigationIcon="@drawable/ic_hamburger"
+                    />
+
+            </android.support.design.widget.AppBarLayout>
+
+            <org.cryse.widget.persistentsearch.PersistentSearchView
+                android:id="@+id/search_view"
+                style="@style/Cardme.SearchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:visibility="gone"
+                app:persistentSV_displayMode="menuItem"
+                app:persistentSV_editHintText="@string/hint_search"
+                app:persistentSV_editHintTextColor="@color/secondary_text"
+                app:persistentSV_editTextColor="@color/primary_text"
+                app:persistentSV_searchCardElevation="2dp"
+                app:persistentSV_searchTextColor="?android:textColorPrimary"
+                />
 
         </android.support.design.widget.CoordinatorLayout>
 

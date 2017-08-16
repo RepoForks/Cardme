@@ -14,9 +14,10 @@ import com.popalay.cardme.utils.extensions.hideAnimated
 import com.popalay.cardme.utils.extensions.onEnd
 import com.popalay.cardme.utils.extensions.showAnimated
 import com.popalay.cardme.utils.transitions.FabTransform
+import shortbread.Shortcut
 import javax.inject.Inject
 
-
+@Shortcut(id = "SHORTCUT_ADD_DEBT", icon = R.drawable.ic_shortcut_debts, rank = 1, shortLabelRes = R.string.shortcut_add_debt)
 class AddDebtActivity : BaseActivity() {
 
     @Inject lateinit var factory: ViewModelProvider.Factory
@@ -45,7 +46,10 @@ class AddDebtActivity : BaseActivity() {
     }
 
     private fun initUi() {
-        FabTransform.setup(this, b.container)
-        window.sharedElementEnterTransition.onEnd { b.buttonSave.showAnimated() }
+        if (FabTransform.setup(this, b.container)) {
+            window.sharedElementEnterTransition.onEnd { b.buttonSave.showAnimated() }
+        } else {
+            b.buttonSave.showAnimated()
+        }
     }
 }

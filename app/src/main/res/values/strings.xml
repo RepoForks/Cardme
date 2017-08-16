@@ -68,5 +68,7 @@
 
     <!-- errors -->
     <string name="error_card_exist">The card is already exist. Do you want to overwrite?</string>
+    <string name="search">Search</string>
+    <string name="hint_search">Search…</string>
 
 </resources>

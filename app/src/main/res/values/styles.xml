@@ -174,4 +174,8 @@
         <item name="android:elevation">@dimen/small_elevation</item>
     </style>
 
+    <style name="Cardme.SearchView">
+
+    </style>
+
 </resources>

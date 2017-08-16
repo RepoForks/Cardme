@@ -54,6 +54,7 @@ class HomeViewModel @Inject constructor(
             R.id.holders -> router.replaceScreen(SCREEN_HOLDERS)
             R.id.debts -> router.replaceScreen(SCREEN_DEBTS)
             R.id.navigation_trash -> router.navigateTo(SCREEN_TRASH)
+            R.id.navigation_settings -> router.navigateTo(SCREEN_SETTINGS)
             R.id.navigation_privacy_policy -> router.navigateToUrl(PRIVACY_POLICY_LINK)
         }
     }

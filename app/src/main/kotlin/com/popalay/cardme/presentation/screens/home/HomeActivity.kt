@@ -38,6 +38,9 @@ import com.popalay.cardme.utils.extensions.setSelectedItem
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import io.card.payment.CardIOActivity
+import org.cryse.widget.persistentsearch.PersistentSearchView
+import org.cryse.widget.persistentsearch.SearchItem
+import org.cryse.widget.persistentsearch.SearchSuggestionsBuilder
 import ru.terrakok.cicerone.commands.Command
 import ru.terrakok.cicerone.commands.Forward
 import shortbread.Shortcut
@@ -61,8 +64,6 @@ class HomeActivity : BaseActivity(), HasSupportFragmentInjector {
 
     companion object {
 
-        private val MENU_SETTINGS = Menu.FIRST
-
         fun getIntent(context: Context) = Intent(context, HomeActivity::class.java)
 
     }
@@ -83,9 +84,8 @@ class HomeActivity : BaseActivity(), HasSupportFragmentInjector {
                 DebtsFragment.newInstance()
             }
             else -> null
-        }
+        }?.also { b.searchView.closeSearch() }
 
-        @Suppress("UNCHECKED_CAST")
         override fun createActivityIntent(screenKey: String, data: Any?) = when (screenKey) {
             SCREEN_HOME -> HomeActivity.getIntent(activity)
             SCREEN_HOLDER_DETAILS -> HolderDetailsActivity.getIntent(activity, data as String)
@@ -96,7 +96,7 @@ class HomeActivity : BaseActivity(), HasSupportFragmentInjector {
             SCREEN_TRASH -> TrashActivity.getIntent(activity)
             SCREEN_CARD_DETAILS -> CardDetailsActivity.getIntent(activity, data as String)
             else -> null
-        }
+        }?.also { b.searchView.closeSearch() }
 
         override fun setupActivityTransactionAnimation(command: Command, activityIntent: Intent): Bundle? {
             if (command is Forward && command.screenKey == SCREEN_ADD_DEBT) {
@@ -151,24 +151,23 @@ class HomeActivity : BaseActivity(), HasSupportFragmentInjector {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, R.string.settings)
-                .setIcon(R.drawable.ic_settings)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        menuInflater.inflate(R.menu.home_menu, menu)
+        b.searchView.setStartPositionFromMenuItem(menu.findItem(R.id.action_search).actionView)
         return true
     }
 
     override fun onBackPressed() {
         if (b.drawerLayout.isDrawerOpen(Gravity.START)) {
             b.drawerLayout.closeDrawers()
-            return
-        }
-        super.onBackPressed()
+        } else if (b.searchView.isSearching) {
+            b.searchView.closeSearch()
+        } else super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) return true
         when (item.itemId) {
-            MENU_SETTINGS -> b.vm?.settingClick?.accept(true)
+            R.id.action_search -> b.searchView.openSearch()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -181,6 +180,50 @@ class HomeActivity : BaseActivity(), HasSupportFragmentInjector {
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         toggle.isDrawerIndicatorEnabled = true
         b.drawerLayout.addDrawerListener(toggle)
+
+        //TODO move to the search interactor
+        b.searchView.setSuggestionBuilder(object : SearchSuggestionsBuilder {
+            override fun buildSearchSuggestion(maxCount: Int, query: String?): MutableCollection<SearchItem> {
+                return arrayListOf(
+                        SearchItem("Card", "32847297492"),
+                        SearchItem("Holder", "Denis Nikiforov", SearchItem.TYPE_SEARCH_ITEM_SUGGESTION),
+                        SearchItem("Holder", "Hjjj Sdkfj", SearchItem.TYPE_SEARCH_ITEM_SUGGESTION),
+                        SearchItem("Card", "32847297492", SearchItem.TYPE_SEARCH_ITEM_SUGGESTION)
+                )
+            }
+
+            override fun buildEmptySearchSuggestion(maxCount: Int): MutableCollection<SearchItem> = arrayListOf()
+
+        })
+
+        b.searchView.setSearchListener(object : PersistentSearchView.SearchListener {
+            override fun onSearchExit() {
+
+            }
+
+            override fun onSearchCleared() {
+
+            }
+
+            override fun onSearchEditClosed() {
+
+            }
+
+            override fun onSearchTermChanged(term: String?) {
+
+            }
+
+            override fun onSearchEditBackPressed() = true
+
+            override fun onSearchEditOpened() {
+
+            }
+
+            override fun onSearch(query: String?) {
+
+            }
+
+        })
     }
 
     //TODO create specific class
@@ -210,11 +253,6 @@ class HomeActivity : BaseActivity(), HasSupportFragmentInjector {
     @Shortcut(id = "SHORTCUT_ADD_CARD", icon = R.drawable.ic_shortcut_add_card, rank = 0, shortLabelRes = R.string.shortcut_add_card)
     fun addCardShortcut() {
         shortcutInteractor.applyShortcut(ShortcutInteractor.Shortcut.ADD_CARD)
-    }
-
-    //@Shortcut(id = "SHORTCUT_ADD_DEBT", icon = R.drawable.ic_shortcut_debts, rank = 1, shortLabelRes = R.string.shortcut_add_debt)
-    fun addDebtShortcut() {
-        shortcutInteractor.applyShortcut(ShortcutInteractor.Shortcut.ADD_DEBT)
     }
 
     @Shortcut(id = "SHORTCUT_DEBTS", icon = R.drawable.ic_shortcut_debts, rank = 2, shortLabelRes = R.string.shortcut_debts)
